@@ -6,6 +6,7 @@
     <title>Upload & Analyse – Deepfake Detection</title>
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/dashboard.css">
+    <link rel="stylesheet" href="css/enhanced-results.css">
 </head>
 <body>
 <nav class="navbar">
@@ -16,8 +17,17 @@
             <a href="dashboard.html">Dashboard</a>
             <a href="upload.html" class="active">New Detection</a>
             <a href="history.html">History</a>
+            <button id="dark-toggle" onclick="DarkMode.toggle()" class="btn btn-sm">🌙</button>
             <button onclick="logout()" class="btn btn-sm">Logout</button>
         </div>
+        <button class="hamburger" id="hamburger" onclick="toggleMobileNav()">☰</button>
+    </div>
+    <div class="mobile-nav" id="mobile-nav">
+        <a href="dashboard.html">Dashboard</a>
+        <a href="upload.html">New Detection</a>
+        <a href="history.html">History</a>
+        <a href="profile.html">Profile</a>
+        <a href="#" onclick="logout()">Logout</a>
     </div>
 </nav>
 
@@ -27,19 +37,15 @@
             <h1>Upload &amp; Analyse Content</h1>
             <p>Upload an image or video to detect if it's real or manipulated</p>
 
-            <!-- Demo mode warning (shown by JS when is_demo=true) -->
+            <!-- Demo mode warning -->
             <div id="demo-banner" class="demo-banner" style="display:none;">
-                ⚠️ <strong>Demo Mode:</strong> No ML model is loaded. Results are random and for
-                demonstration only.
+                ⚠️ <strong>Demo Mode:</strong> No ML model loaded. Results are random.
             </div>
 
             <div class="upload-tabs">
                 <button class="tab-btn active" data-type="image">📷 Image</button>
                 <button class="tab-btn"        data-type="video">🎥 Video</button>
             </div>
-
-            <div id="error-message"   class="error-message"   style="display:none;"></div>
-            <div id="success-message" class="success-message" style="display:none;"></div>
 
             <!-- Drop zone -->
             <div class="upload-area" id="upload-area">
@@ -76,45 +82,36 @@
                 <p id="progress-text">Uploading file… 0%</p>
             </div>
 
-            <!-- Results -->
+            <!-- Enhanced Results -->
             <div id="results-section" class="results-section" style="display:none;">
-                <h2>Analysis Results</h2>
-                <div class="result-card">
-                    <div class="result-status" id="result-status"></div>
+                
+                <!-- Status Header -->
+                <div class="result-status" id="result-status"></div>
 
-                    <div class="result-details">
-                        <div class="detail-item">
-                            <span class="label">Confidence:</span>
-                            <span class="value" id="confidence-value"></span>
-                        </div>
-                        <!-- Confidence bar -->
-                        <div class="confidence-bar-wrap">
-                            <div class="confidence-bar-bg">
-                                <div id="confidence-bar" class="confidence-bar-fill"
-                                     style="width:0%;"></div>
-                            </div>
-                        </div>
-                        <div class="detail-item">
-                            <span class="label">Processing Time:</span>
-                            <span class="value" id="processing-time"></span>
-                        </div>
-                    </div>
+                <!-- Circular Confidence Gauge -->
+                <div id="confidence-gauge"></div>
 
-                    <div class="result-actions">
-                        <a id="detail-link" href="#" class="btn btn-primary"
-                           style="display:none;">View Full Details</a>
-                        <button class="btn btn-secondary"
-                                onclick="window.location.href='dashboard.html'">
-                            Dashboard
-                        </button>
-                        <button class="btn btn-secondary" onclick="resetUpload()">
-                            Analyse Another
-                        </button>
-                    </div>
+                <!-- Quality Metrics -->
+                <div id="quality-metrics"></div>
+
+                <!-- Artifacts Detected -->
+                <div id="artifacts-container"></div>
+
+                <!-- Actions -->
+                <div style="padding:2rem;text-align:center;border-top:1px solid #e5e7eb;">
+                    <a id="detail-link" href="#" class="btn btn-primary"
+                       style="display:none;">View Full Details</a>
+                    <button class="btn btn-secondary"
+                            onclick="window.location.href='dashboard.html'">
+                        Dashboard
+                    </button>
+                    <button class="btn btn-secondary" onclick="resetUpload()">
+                        Analyse Another
+                    </button>
                 </div>
             </div>
 
-        </div><!-- /upload-section -->
+        </div>
     </div>
 </div>
 
