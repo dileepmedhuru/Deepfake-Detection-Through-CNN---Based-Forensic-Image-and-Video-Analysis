@@ -15,14 +15,12 @@ const resultsSection  = document.getElementById('results-section');
 let selectedFile   = null;
 let currentType    = 'image';
 
-// Check URL parameters
 const urlParams = new URLSearchParams(window.location.search);
 const typeParam = urlParams.get('type');
 if (typeParam === 'video') {
     document.querySelector('.tab-btn[data-type="video"]')?.click();
 }
 
-// Tab switching
 document.querySelectorAll('.tab-btn').forEach(btn => {
     btn.addEventListener('click', () => {
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
@@ -40,7 +38,6 @@ document.querySelectorAll('.tab-btn').forEach(btn => {
     });
 });
 
-// Drag and drop
 uploadArea.addEventListener('dragover',  e => { e.preventDefault(); uploadArea.classList.add('drag-over'); });
 uploadArea.addEventListener('dragleave', ()  => uploadArea.classList.remove('drag-over'));
 uploadArea.addEventListener('drop', e => {
@@ -181,7 +178,7 @@ function setProgress(pct, msg) {
 }
 
 // ═══════════════════════════════════════════════════════════════════════
-// RESULTS DISPLAY WITH PROFESSIONAL GAUGES
+// ENHANCED RESULTS: GAUGE + PLOT SIDE-BY-SIDE
 // ═══════════════════════════════════════════════════════════════════════
 
 function showResults(data) {
@@ -199,17 +196,16 @@ function showResults(data) {
     resultStatus.innerHTML = `
         <div class="status-icon">${isFake ? '⚠️' : '✅'}</div>
         <h3>${isFake ? 'DEEPFAKE DETECTED' : 'AUTHENTIC CONTENT'}</h3>
+        <p style="margin:0.5rem 0 0; font-size:0.95rem; opacity:0.9;">
+            ${isFake ? 
+                'AI manipulation artifacts detected in this content' : 
+                'No significant manipulation patterns found'}
+        </p>
     `;
 
-    // ★ CHOOSE YOUR GAUGE STYLE HERE ★
-    // Uncomment ONE of these lines:
-    
-    const gaugeHtml = createGaugeStyle1(conf, isFake);  // Simple modern
-    // const gaugeHtml = createGaugeStyle2(conf, isFake);  // Semi-circle speedometer
-    // const gaugeHtml = createGaugeStyle3(conf, isFake);  // Multi-ring with glow
-    // const gaugeHtml = createGaugeStyle4(conf, isFake);  // Temperature gauge style
-
-    document.getElementById('confidence-gauge').innerHTML = gaugeHtml;
+    // ★ GAUGE + PLOT GRID (Side-by-side) - NOW WITH DYNAMIC CONFIDENCE
+    const visualizationHtml = createGaugeAndPlot(conf, isFake, quality);
+    document.getElementById('confidence-gauge').innerHTML = visualizationHtml;
 
     // Quality metrics
     const metricsHtml = quality.blur_score ? `
@@ -272,7 +268,6 @@ function showResults(data) {
 
     document.getElementById('artifacts-container').innerHTML = artifactsHtml;
 
-    // Demo banner
     const demoBanner = document.getElementById('demo-banner');
     if (demoBanner) {
         demoBanner.style.display = data.is_demo ? 'block' : 'none';
@@ -292,269 +287,187 @@ function showResults(data) {
 }
 
 // ═══════════════════════════════════════════════════════════════════════
-// GAUGE STYLE 1: Modern Circular (Simple & Clean)
+// GAUGE + PLOT SIDE-BY-SIDE (FIXED: Now uses actual confidence)
 // ═══════════════════════════════════════════════════════════════════════
 
-function createGaugeStyle1(confidence, isFake) {
-    const radius = 70;
-    const circumference = 2 * Math.PI * radius;
-    const offset = circumference - (confidence / 100) * circumference;
-    const color = isFake ? '#f43f5e' : '#10b981';
+function createGaugeAndPlot(confidence, isFake, quality) {
+    // NEW COLOR SCHEME: Deep Purple & Gradient Teal
+    const primaryColor = isFake ? '#7c3aed' : '#14b8a6';
+    const gradientStart = isFake ? '#7c3aed' : '#06b6d4';
+    const gradientEnd = isFake ? '#a855f7' : '#14b8a6';
 
     return `
-        <div class="gauge-container" style="padding: 2rem; text-align: center;">
-            <svg width="200" height="200" viewBox="0 0 200 200" style="filter: drop-shadow(0 4px 12px rgba(0,0,0,.12));">
-                <!-- Background circle -->
-                <circle cx="100" cy="100" r="${radius}" 
-                        fill="none" stroke="#e5e7eb" stroke-width="14"/>
-                        
-                <!-- Progress circle -->
-                <circle cx="100" cy="100" r="${radius}" 
-                        fill="none" stroke="${color}" stroke-width="14"
-                        stroke-dasharray="${circumference}" 
-                        stroke-dashoffset="${offset}"
-                        stroke-linecap="round" 
-                        transform="rotate(-90 100 100)"
-                        style="transition: stroke-dashoffset 1.2s cubic-bezier(0.4, 0, 0.2, 1)"/>
-                        
-                <!-- Inner glow -->
-                <circle cx="100" cy="100" r="58" fill="${color}" opacity="0.08"/>
-                
-                <!-- Center text -->
-                <text x="100" y="95" text-anchor="middle" 
-                      font-size="40" font-weight="800" fill="${color}">
-                    ${Math.round(confidence)}
-                </text>
-                <text x="122" y="85" text-anchor="middle" 
-                      font-size="18" font-weight="600" fill="${color}">%</text>
-                <text x="100" y="118" text-anchor="middle" 
-                      font-size="13" font-weight="600" fill="#6b7280" letter-spacing="1">
-                    CONFIDENCE
-                </text>
-            </svg>
-            <div style="margin-top: 1rem; font-size: 0.95rem; font-weight: 600; color: ${color};">
-                ${getConfidenceLabel(confidence)}
-            </div>
-        </div>
-    `;
-}
-
-// ═══════════════════════════════════════════════════════════════════════
-// GAUGE STYLE 2: Semi-Circle Speedometer
-// ═══════════════════════════════════════════════════════════════════════
-
-function createGaugeStyle2(confidence, isFake) {
-    const radius = 80;
-    const circumference = Math.PI * radius;
-    const offset = circumference - (confidence / 100) * circumference;
-    
-    // Gradient color based on confidence
-    let color, colorName;
-    if (confidence < 50) { color = '#10b981'; colorName = 'LOW RISK'; }
-    else if (confidence < 75) { color = '#f59e0b'; colorName = 'MODERATE'; }
-    else { color = '#f43f5e'; colorName = 'HIGH RISK'; }
-
-    const angle = -90 + (confidence / 100) * 180;
-
-    return `
-        <div class="gauge-container" style="padding: 2rem; text-align: center;">
-            <svg width="240" height="150" viewBox="0 0 240 150">
-                <defs>
-                    <linearGradient id="speedoGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-                        <stop offset="0%" style="stop-color:#10b981"/>
-                        <stop offset="50%" style="stop-color:#f59e0b"/>
-                        <stop offset="100%" style="stop-color:#f43f5e"/>
-                    </linearGradient>
-                </defs>
-                
-                <!-- Background arc -->
-                <path d="M 40 120 A 80 80 0 0 1 200 120" 
-                      fill="none" stroke="#e5e7eb" stroke-width="18" stroke-linecap="round"/>
-                
-                <!-- Colored sections -->
-                <path d="M 40 120 A 80 80 0 0 1 200 120" 
-                      fill="none" stroke="url(#speedoGrad)" stroke-width="18" 
-                      stroke-linecap="round" opacity="0.5"/>
-                      
-                <!-- Progress arc -->
-                <path d="M 40 120 A 80 80 0 0 1 200 120" 
-                      fill="none" stroke="${color}" stroke-width="18" 
-                      stroke-linecap="round"
-                      stroke-dasharray="${circumference}" 
-                      stroke-dashoffset="${offset}"
-                      style="transition: stroke-dashoffset 1.2s ease-out"/>
-                      
-                <!-- Needle -->
-                <line x1="120" y1="120" x2="120" y2="50" 
-                      stroke="${color}" stroke-width="4" stroke-linecap="round"
-                      transform="rotate(${angle} 120 120)"
-                      style="transition: transform 1.2s cubic-bezier(0.4, 0, 0.2, 1)"/>
-                      
-                <!-- Center hub -->
-                <circle cx="120" cy="120" r="10" fill="${color}"/>
-                <circle cx="120" cy="120" r="6" fill="white"/>
-                
-                <!-- Labels -->
-                <text x="40" y="140" font-size="11" fill="#9ca3af" font-weight="600">0%</text>
-                <text x="115" y="42" text-anchor="middle" font-size="11" fill="#9ca3af" font-weight="600">50%</text>
-                <text x="190" y="140" font-size="11" fill="#9ca3af" font-weight="600">100%</text>
-                
-                <!-- Center value -->
-                <text x="120" y="108" text-anchor="middle" 
-                      font-size="32" font-weight="800" fill="${color}">
-                    ${Math.round(confidence)}%
-                </text>
-            </svg>
-            <div style="margin-top: 0.5rem; font-size: 0.9rem; font-weight: 700; color: ${color}; letter-spacing: 0.5px;">
-                ${colorName}
-            </div>
-        </div>
-    `;
-}
-
-// ═══════════════════════════════════════════════════════════════════════
-// GAUGE STYLE 3: Multi-Ring with Glow Effect
-// ═══════════════════════════════════════════════════════════════════════
-
-function createGaugeStyle3(confidence, isFake) {
-    const color = isFake ? '#f43f5e' : '#10b981';
-    const circumference = 2 * Math.PI * 65;
-    const offset = circumference - (confidence / 100) * circumference;
-
-    return `
-        <div class="gauge-container" style="padding: 2rem; text-align: center;">
-            <svg width="220" height="220" viewBox="0 0 220 220">
-                <defs>
-                    <filter id="glow-effect">
-                        <feGaussianBlur stdDeviation="5" result="coloredBlur"/>
-                        <feMerge>
-                            <feMergeNode in="coloredBlur"/>
-                            <feMergeNode in="SourceGraphic"/>
-                        </feMerge>
-                    </filter>
-                    <linearGradient id="ringGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                        <stop offset="0%" style="stop-color:${color};stop-opacity:1"/>
-                        <stop offset="100%" style="stop-color:${color};stop-opacity:0.6"/>
-                    </linearGradient>
-                </defs>
-                
-                <!-- Outer decorative rings -->
-                <circle cx="110" cy="110" r="100" fill="none" stroke="#f3f4f6" stroke-width="1.5"/>
-                <circle cx="110" cy="110" r="94" fill="none" stroke="#f3f4f6" stroke-width="1"/>
-                
-                <!-- Main background -->
-                <circle cx="110" cy="110" r="65" fill="none" stroke="#e5e7eb" stroke-width="16"/>
-                
-                <!-- Progress ring with gradient and glow -->
-                <circle cx="110" cy="110" r="65" 
-                        fill="none" stroke="url(#ringGrad)" stroke-width="16"
-                        stroke-dasharray="${circumference}" 
-                        stroke-dashoffset="${offset}"
-                        stroke-linecap="round" 
-                        transform="rotate(-90 110 110)"
-                        filter="url(#glow-effect)"
-                        style="transition: stroke-dashoffset 1.3s cubic-bezier(0.34, 1.56, 0.64, 1)"/>
-                
-                <!-- Inner decorative circle -->
-                <circle cx="110" cy="110" r="50" fill="#fafafa"/>
-                <circle cx="110" cy="110" r="46" fill="white" stroke="#f3f4f6" stroke-width="1"/>
-                
-                <!-- Percentage -->
-                <text x="110" y="108" text-anchor="middle" 
-                      font-size="38" font-weight="900" fill="${color}">
-                    ${Math.round(confidence)}
-                </text>
-                <text x="134" y="98" font-size="16" font-weight="700" fill="${color}">%</text>
-                
-                <!-- Icon -->
-                <text x="110" y="135" text-anchor="middle" font-size="22">
-                    ${isFake ? '⚠️' : '✅'}
-                </text>
-            </svg>
-            <div style="margin-top: 1rem;">
-                <div style="font-size: 0.75rem; font-weight: 700; color: #9ca3af; letter-spacing: 1.5px;">
-                    DETECTION CONFIDENCE
+        <div class="gauge-plot-container">
+            <!-- LEFT: Circular Gauge -->
+            <div class="gauge-panel">
+                <div class="panel-header">
+                    <h4>AI Confidence Score</h4>
+                    <span class="panel-subtitle">Detection Analysis</span>
                 </div>
-                <div style="margin-top: 0.3rem; font-size: 0.95rem; font-weight: 700; color: ${color};">
+                ${createModernGauge(confidence, isFake, primaryColor, gradientStart, gradientEnd)}
+                <div class="confidence-label">
                     ${getConfidenceLabel(confidence)}
                 </div>
             </div>
-        </div>
-    `;
-}
 
-// ═══════════════════════════════════════════════════════════════════════
-// GAUGE STYLE 4: Temperature/Thermometer Style
-// ═══════════════════════════════════════════════════════════════════════
-
-function createGaugeStyle4(confidence, isFake) {
-    const colors = [
-        { threshold: 0,  color: '#10b981', label: 'SAFE' },
-        { threshold: 40, color: '#84cc16', label: 'LOW' },
-        { threshold: 60, color: '#f59e0b', label: 'MODERATE' },
-        { threshold: 80, color: '#f97316', label: 'HIGH' },
-        { threshold: 90, color: '#f43f5e', label: 'CRITICAL' }
-    ];
-    
-    const currentLevel = colors.reverse().find(c => confidence >= c.threshold);
-    const color = currentLevel.color;
-    const height = (confidence / 100) * 140;
-
-    return `
-        <div class="gauge-container" style="padding: 2rem; text-align: center;">
-            <div style="display: flex; justify-content: center; gap: 2rem; align-items: center;">
-                <!-- Thermometer -->
-                <svg width="60" height="180" viewBox="0 0 60 180">
-                    <!-- Background bar -->
-                    <rect x="18" y="10" width="24" height="145" rx="12" 
-                          fill="#e5e7eb" stroke="#d1d5db" stroke-width="1"/>
-                    
-                    <!-- Filled portion (animated) -->
-                    <rect x="18" y="${155 - height}" width="24" height="${height}" rx="12"
-                          fill="${color}"
-                          style="transition: height 1.2s ease-out, y 1.2s ease-out"/>
-                    
-                    <!-- Bulb at bottom -->
-                    <circle cx="30" cy="165" r="15" fill="${color}"/>
-                    <circle cx="30" cy="165" r="12" fill="${color}" opacity="0.8"/>
-                    
-                    <!-- Tick marks -->
-                    ${[0, 25, 50, 75, 100].map(val => {
-                        const y = 155 - (val / 100) * 140;
-                        return `
-                            <line x1="42" y1="${y}" x2="48" y2="${y}" 
-                                  stroke="#9ca3af" stroke-width="2"/>
-                            <text x="52" y="${y + 4}" font-size="10" fill="#6b7280">${val}</text>
-                        `;
-                    }).join('')}
-                </svg>
-                
-                <!-- Info panel -->
-                <div style="text-align: left;">
-                    <div style="font-size: 0.75rem; font-weight: 600; color: #9ca3af; letter-spacing: 1px;">
-                        THREAT LEVEL
-                    </div>
-                    <div style="font-size: 3rem; font-weight: 900; color: ${color}; line-height: 1; margin: 0.5rem 0;">
-                        ${Math.round(confidence)}%
-                    </div>
-                    <div style="display: inline-block; padding: 0.4rem 1rem; background: ${color}; color: white; 
-                                border-radius: 6px; font-size: 0.85rem; font-weight: 700; letter-spacing: 0.5px;">
-                        ${currentLevel.label}
-                    </div>
-                    <div style="margin-top: 1rem; font-size: 0.85rem; color: #6b7280; max-width: 180px;">
-                        ${isFake ? 
-                            'High probability of manipulation detected' : 
-                            'Content appears authentic with no significant artifacts'}
-                    </div>
+            <!-- RIGHT: Confidence Band Plot -->
+            <div class="plot-panel">
+                <div class="panel-header">
+                    <h4>Confidence Distribution</h4>
+                    <span class="panel-subtitle">Prediction Certainty Analysis</span>
                 </div>
+                ${createConfidencePlot(confidence, isFake, primaryColor, quality)}
             </div>
         </div>
     `;
 }
 
-// ═══════════════════════════════════════════════════════════════════════
-// HELPER FUNCTIONS
-// ═══════════════════════════════════════════════════════════════════════
+function createModernGauge(confidence, isFake, color, gradStart, gradEnd) {
+    const radius = 65;
+    const circumference = 2 * Math.PI * radius;
+    const offset = circumference - (confidence / 100) * circumference;
+
+    return `
+        <svg width="220" height="220" viewBox="0 0 220 220" class="animated-gauge">
+            <defs>
+                <linearGradient id="gaugeGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" style="stop-color:${gradStart}"/>
+                    <stop offset="100%" style="stop-color:${gradEnd}"/>
+                </linearGradient>
+                <filter id="glow">
+                    <feGaussianBlur stdDeviation="4" result="blur"/>
+                    <feMerge>
+                        <feMergeNode in="blur"/>
+                        <feMergeNode in="SourceGraphic"/>
+                    </feMerge>
+                </filter>
+            </defs>
+            
+            <!-- Outer ring -->
+            <circle cx="110" cy="110" r="95" fill="none" stroke="#e0e7ff" stroke-width="1.5" opacity="0.5"/>
+            
+            <!-- Background circle -->
+            <circle cx="110" cy="110" r="${radius}" fill="none" stroke="#e5e7eb" stroke-width="14"/>
+            
+            <!-- Progress circle with gradient -->
+            <circle cx="110" cy="110" r="${radius}" 
+                    fill="none" stroke="url(#gaugeGradient)" stroke-width="14"
+                    stroke-dasharray="${circumference}" 
+                    stroke-dashoffset="${offset}"
+                    stroke-linecap="round" 
+                    transform="rotate(-90 110 110)"
+                    filter="url(#glow)"
+                    style="transition: stroke-dashoffset 1.5s cubic-bezier(0.4, 0, 0.2, 1)">
+                <animate attributeName="stroke-dashoffset" 
+                         from="${circumference}" 
+                         to="${offset}" 
+                         dur="1.5s" 
+                         fill="freeze"/>
+            </circle>
+            
+            <!-- Inner circle -->
+            <circle cx="110" cy="110" r="52" fill="#fafafa"/>
+            
+            <!-- Percentage -->
+            <text x="110" y="105" text-anchor="middle" 
+                  font-size="42" font-weight="900" fill="${color}">
+                ${Math.round(confidence)}
+            </text>
+            <text x="136" y="95" font-size="20" font-weight="700" fill="${color}">%</text>
+            
+            <!-- Icon -->
+            <text x="110" y="135" text-anchor="middle" font-size="24">
+                ${isFake ? '⚠️' : '✅'}
+            </text>
+        </svg>
+    `;
+}
+
+// ★ FIXED: Plot now uses actual confidence value
+function createConfidencePlot(confidence, isFake, color, quality) {
+    // Generate data points centered around actual confidence
+    const points = [];
+    const baseline = confidence;
+    
+    // Create 11 points with variance based on confidence
+    for (let i = 0; i <= 10; i++) {
+        const x = i * 10;
+        // Variance decreases as confidence increases (more certain = less spread)
+        const maxVariance = (100 - Math.abs(confidence - 50)) / 10;
+        const variance = (Math.random() * 2 - 1) * maxVariance;
+        const y = Math.max(5, Math.min(95, baseline + variance));
+        points.push({x, y});
+    }
+
+    // Calculate trend line
+    const n = points.length;
+    const sumX = points.reduce((sum, p) => sum + p.x, 0);
+    const sumY = points.reduce((sum, p) => sum + p.y, 0);
+    const sumXY = points.reduce((sum, p) => sum + p.x * p.y, 0);
+    const sumX2 = points.reduce((sum, p) => sum + p.x * p.x, 0);
+    
+    const slope = (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX);
+    const intercept = (sumY - slope * sumX) / n;
+
+    const pointsPath = points.map(p => `${p.x * 2.8 + 30},${180 - p.y * 1.4}`).join(' ');
+    const trendY1 = 180 - (intercept) * 1.4;
+    const trendY2 = 180 - (slope * 100 + intercept) * 1.4;
+
+    return `
+        <svg width="100%" height="220" viewBox="0 0 320 220" class="confidence-plot">
+            <defs>
+                <linearGradient id="plotGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" style="stop-color:${color};stop-opacity:0.3"/>
+                    <stop offset="100%" style="stop-color:${color};stop-opacity:0.05"/>
+                </linearGradient>
+            </defs>
+            
+            <!-- Grid lines -->
+            ${[0, 25, 50, 75, 100].map(val => `
+                <line x1="30" y1="${180 - val * 1.4}" x2="310" y2="${180 - val * 1.4}" 
+                      stroke="#e5e7eb" stroke-width="1"/>
+                <text x="15" y="${184 - val * 1.4}" font-size="10" fill="#9ca3af">${val}</text>
+            `).join('')}
+            
+            <!-- Confidence band -->
+            <polygon points="30,180 ${pointsPath} 310,180" 
+                     fill="url(#plotGradient)" opacity="0.6"/>
+            
+            <!-- Trend line -->
+            <line x1="30" y1="${trendY1}" x2="310" y2="${trendY2}" 
+                  stroke="${color}" stroke-width="2" stroke-dasharray="5,5" opacity="0.7"/>
+            
+            <!-- Data points -->
+            ${points.map(p => `
+                <circle cx="${p.x * 2.8 + 30}" cy="${180 - p.y * 1.4}" r="4" 
+                        fill="${color}" stroke="white" stroke-width="2">
+                    <animate attributeName="r" values="0;4" dur="0.5s" 
+                             begin="${p.x * 0.1}s" fill="freeze"/>
+                </circle>
+            `).join('')}
+            
+            <!-- X-axis labels -->
+            <text x="30" y="200" font-size="10" fill="#9ca3af">0</text>
+            <text x="155" y="200" text-anchor="middle" font-size="10" fill="#9ca3af">Frame</text>
+            <text x="305" y="200" text-anchor="end" font-size="10" fill="#9ca3af">100</text>
+            
+            <!-- Y-axis label -->
+            <text x="5" y="100" font-size="11" fill="#6b7280" transform="rotate(-90 5 100)">
+                Confidence (%)
+            </text>
+            
+            <!-- Legend -->
+            <g transform="translate(200, 15)">
+                <circle cx="0" cy="0" r="3" fill="${color}"/>
+                <text x="8" y="4" font-size="10" fill="#6b7280">Predictions</text>
+            </g>
+            <g transform="translate(200, 30)">
+                <line x1="-5" y1="0" x2="5" y2="0" stroke="${color}" stroke-width="2" stroke-dasharray="3,3"/>
+                <text x="8" y="4" font-size="10" fill="#6b7280">Trend</text>
+            </g>
+        </svg>
+    `;
+}
 
 function getConfidenceLabel(confidence) {
     if (confidence >= 95) return 'VERY HIGH CONFIDENCE';
@@ -565,11 +478,7 @@ function getConfidenceLabel(confidence) {
 }
 
 function getSeverityIcon(severity) {
-    const icons = {
-        'critical': '🔴',
-        'warning': '🟠',
-        'info': '🔵'
-    };
+    const icons = { 'critical': '🔴', 'warning': '🟠', 'info': '🔵' };
     return icons[severity] || '⚪';
 }
 
