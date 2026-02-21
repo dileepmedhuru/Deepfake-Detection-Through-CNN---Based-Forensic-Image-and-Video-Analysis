@@ -93,7 +93,19 @@ async function deleteDetection(id) {
 }
 
 function exportCSV() {
-    window.location.href = `${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.EXPORT_CSV}`;
+    fetch(`${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.EXPORT_CSV}`, {
+        headers: { 'Authorization': `Bearer ${Storage.getToken()}` }
+    })
+    .then(response => response.blob())
+    .then(blob => {
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `detection_history_${new Date().toISOString().split('T')[0]}.csv`;
+        link.click();
+        window.URL.revokeObjectURL(url);
+        Toast.success('CSV downloaded!');
+    });
 }
 
 // Debounced search

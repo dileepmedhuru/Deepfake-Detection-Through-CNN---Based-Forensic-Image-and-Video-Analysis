@@ -492,3 +492,177 @@ canvas { max-width: 100%; }
     .navbar, .mobile-nav, .btn, .hamburger { display: none !important; }
     .gauge-plot-container { page-break-inside: avoid; }
 }
+
+
+/* Fix all headings and text in dark mode */
+[data-theme="dark"] h1,
+[data-theme="dark"] h2,
+[data-theme="dark"] h3,
+[data-theme="dark"] h4,
+[data-theme="dark"] h5,
+[data-theme="dark"] .page-title,
+[data-theme="dark"] .section-title,
+[data-theme="dark"] .card-title {
+    color: #f1f5f9 !important; /* Light gray - very visible on dark background */
+}
+
+/* Fix all paragraphs and body text */
+[data-theme="dark"] p,
+[data-theme="dark"] .subtitle,
+[data-theme="dark"] .description {
+    color: #cbd5e1 !important; /* Muted light gray */
+}
+
+/* Fix specific sections that are problematic */
+
+/* Profile page - "My Profile" heading */
+[data-theme="dark"] .profile-header h1,
+[data-theme="dark"] .profile-section h1 {
+    color: #f1f5f9 !important;
+}
+
+/* Profile page - "Account Information" label */
+[data-theme="dark"] .account-card h3,
+[data-theme="dark"] .info-label,
+[data-theme="dark"] label {
+    color: #f1f5f9 !important;
+}
+
+/* Upload page - "Upload & Analyse Content" */
+[data-theme="dark"] .upload-section h1,
+[data-theme="dark"] .upload-header h1 {
+    color: #f1f5f9 !important;
+}
+
+/* Upload page - subtitle */
+[data-theme="dark"] .upload-section > p,
+[data-theme="dark"] .upload-header > p {
+    color: #cbd5e1 !important;
+}
+
+/* Dashboard page */
+[data-theme="dark"] .dashboard-header h1,
+[data-theme="dark"] .dashboard-section h2 {
+    color: #f1f5f9 !important;
+}
+
+/* All cards in dark mode */
+[data-theme="dark"] .card,
+[data-theme="dark"] .info-card,
+[data-theme="dark"] .stat-card,
+[data-theme="dark"] .account-card {
+    background: #1e293b;
+    color: #f1f5f9;
+    border-color: #334155;
+}
+
+/* Form labels */
+[data-theme="dark"] .form-group label {
+    color: #f1f5f9 !important;
+}
+
+/* Input placeholders */
+[data-theme="dark"] input::placeholder,
+[data-theme="dark"] textarea::placeholder {
+    color: #94a3b8 !important;
+}
+
+/* Navbar text (should already be white, but ensure) */
+[data-theme="dark"] .navbar,
+[data-theme="dark"] .navbar a {
+    color: white !important;
+}
+
+/* Make sure all text is visible on dark backgrounds */
+[data-theme="dark"] {
+    color: #f1f5f9;
+}
+
+[data-theme="dark"] body {
+    background: #0f172a;
+    color: #f1f5f9;
+}
+
+/* Upload area in dark mode */
+[data-theme="dark"] .upload-area {
+    background: #1e293b;
+    border-color: #7c3aed;
+    color: #f1f5f9;
+}
+
+[data-theme="dark"] .upload-area h3 {
+    color: #f1f5f9 !important;
+}
+
+/* Result sections */
+[data-theme="dark"] .results-section h3,
+[data-theme="dark"] .results-section h4 {
+    color: #f1f5f9 !important;
+}
+
+/* Panel headers */
+[data-theme="dark"] .panel-header h4 {
+    color: #f1f5f9 !important;
+}
+
+/* Quality metrics */
+[data-theme="dark"] .metric-label {
+    color: #cbd5e1 !important;
+}
+
+[data-theme="dark"] .metric-value {
+    color: #f1f5f9 !important;
+}
+
+/* Forensic panel (from your friend's changes) */
+[data-theme="dark"] .forensic-panel {
+    background: #1e293b;
+    color: #f1f5f9;
+}
+
+[data-theme="dark"] .fp-header h3,
+[data-theme="dark"] .fp-clue-head h4 {
+    color: #f1f5f9 !important;
+}
+
+/* Tab labels */
+[data-theme="dark"] .result-tab {
+    color: #cbd5e1;
+}
+
+[data-theme="dark"] .result-tab.active {
+    color: #f1f5f9 !important;
+}
+
+/* History page */
+[data-theme="dark"] .history-header h1 {
+    color: #f1f5f9 !important;
+}
+
+/* Admin page */
+[data-theme="dark"] .admin-header h1 {
+    color: #f1f5f9 !important;
+}
+
+/* Table headers */
+[data-theme="dark"] table th {
+    color: #f1f5f9 !important;
+}
+
+[data-theme="dark"] table td {
+    color: #cbd5e1 !important;
+}
+
+/* Ensure all white/light text on dark backgrounds */
+[data-theme="dark"] * {
+    border-color: #334155;
+}
+
+/* Override any competing styles */
+[data-theme="dark"] .text-dark {
+    color: #f1f5f9 !important;
+}
+
+[data-theme="dark"] .text-muted {
+    color: #94a3b8 !important;
+}
