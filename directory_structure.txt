@@ -31,7 +31,7 @@ Forgery_detection/
 │   ├── database.py                        # SQLAlchemy instance (unchanged)
 │   ├── models.py                          # ✏️  Hashed passwords, is_demo, force_password_change, file_path excluded
 │   ├── utils.py                           # ✏️  Magic-byte MIME validation (not extension-only)
-│   │
+│   ├── admin_routes.py
 │   ├── auth_routes.py                     # ✏️  Password hashing, strength validation, /forgot-password, /reset-password
 │   ├── detection_routes.py                # ✏️  /upload-bulk, search+sort+filter, /export-csv, result email
 │   ├── admin_routes.py                    # ✏️  Merged stats, daily_activity chart data, DELETE user, pagination
@@ -69,7 +69,10 @@ Forgery_detection/
 │   ├── css/
 │   │   ├── style.css                      # ✏️  Dark mode (navy theme), mobile nav, search toolbar
 │   │   ├── auth.css                       # Auth page styles (unchanged)
-│   │   ├── dashboard.css                  # ✏️  Confidence bar, demo banner/tag, pagination, charts
+│   │   ├── dashboard.css 
+|   |   ├── complete_theme.css
+|   |   ├── enhanced_results.css
+|   |   ├── new_theme.css           # ✏️  Confidence bar, demo banner/tag, pagination, charts
 │   │   └── admin.css                      # ✏️  User detail modal, avatar circles, role badges
 │   │
 │   └── js/
@@ -77,7 +80,8 @@ Forgery_detection/
 │       ├── auth.js                        # ✏️  Client password strength validation, force_password_change redirect
 │       ├── upload.js                      # ✏️  Demo banner, confidence bar, contextual explanations, toasts
 │       ├── detection.js                   # Detection results logic (unchanged)
-│       ├── history.js                     # ✏️  Search, sort, CSV export, toasts, server-side pagination
+│       ├── history.js  
+|       ├── forensic_panel.js                   # ✏️  Search, sort, CSV export, toasts, server-side pagination
 │       └── admin.js                       # ✏️  Chart.js chart, user detail modal, delete user, pagination
 │
 └── ml_models/
