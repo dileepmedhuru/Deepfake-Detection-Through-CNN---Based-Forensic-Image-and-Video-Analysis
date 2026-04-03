@@ -11,9 +11,10 @@ __pycache__/
 processed_dataset/
 # Deepfake dataset (Celeb-DF)
 Celeb-DF-v2/
-uploads/
+
 backend/uploads/
-uploads/
+D:\Projects\Forgery_detection\uploads\
+
 # Trained CNN model
 ml_models/cnn_model.h5
 
