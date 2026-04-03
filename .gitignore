@@ -11,7 +11,7 @@ __pycache__/
 processed_dataset/
 # Deepfake dataset (Celeb-DF)
 Celeb-DF-v1/
-
+uploads/
 backend/uploads/
 uploads/
 # Trained CNN model
