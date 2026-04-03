@@ -10,7 +10,7 @@ __pycache__/
 # Processed / generated data (optional)
 processed_dataset/
 # Deepfake dataset (Celeb-DF)
-Celeb-DF-v1/
+Celeb-DF-v2/
 uploads/
 backend/uploads/
 uploads/
