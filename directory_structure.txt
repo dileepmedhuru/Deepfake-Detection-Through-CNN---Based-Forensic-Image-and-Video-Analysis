@@ -5,9 +5,10 @@ Forgery_detection/
 ├── README.md                               # Project documentation
 ├── setup.py                                # Database initialisation script
 │
-├── Celeb-DF-v1/                           # Original dataset (NOT in git)
+├── Celeb-DF-v2/                           # Original dataset (NOT in git)
 │   ├── Celeb-real/                        # Real celebrity videos
-│   ├── Celeb-synthesis/                   # Fake/synthesised videos
+│   ├── Celeb-synthesis/                    # Fake/synthesised videos
+    ├── List_of_testing_videos.txt
 │   └── YouTube-real/                      # Real YouTube videos
 │
 ├── processed_dataset/                      # Preprocessed frames (NOT in git)
