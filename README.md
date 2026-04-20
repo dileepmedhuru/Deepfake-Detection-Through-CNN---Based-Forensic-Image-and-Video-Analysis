@@ -101,15 +101,20 @@ Each result includes **interpretable evidence**, not just a label.
 ```bash
 git clone https://github.com/your-username/deepfake-detection.git
 cd deepfake-detection
+````
 
-**2. Install dependencies **
+### 2. Install dependencies
+
+```bash
 cd backend
 pip install -r requirements.txt
+```
 
-""3. Configure environment**
+### 3. Configure environment
 
-Create a .env file:
+Create a `.env` file:
 
+```env
 SECRET_KEY=your_secret_key
 JWT_SECRET_KEY=your_jwt_secret
 
@@ -120,44 +125,67 @@ MAIL_USERNAME=your-email@gmail.com
 MAIL_PASSWORD=your-app-password
 
 UPLOAD_RETENTION_DAYS=7
+```
 
-**4. Run the application**
+### 4. Run the application
+
+```bash
 python app.py
+```
 
 Open:
-👉 http://localhost:5000
+👉 [http://localhost:5000](http://localhost:5000)
 
-**🤖 Model Training (Optional)**
+---
 
-If the trained model is not present, the app runs in demo mode.
+## 🤖 Model Training (Optional)
 
-**Dataset**
+If the trained model is not present, the app runs in **demo mode**.
 
-Download Celeb-DF-v2 and place it outside the project directory.
+### Dataset
 
-**Train**
+Download **Celeb-DF-v2** and place it outside the project directory.
+
+### Train
+
+```bash
 python train_model.py --epochs 20 --batch-size 16
+```
 
 Model will be saved in:
 
+```
 ml_models/cnn_model.h5
+```
 
-**⚠️ Limitations**
-Video processing is synchronous (can be slow)
-SQLite not suitable for multi-user scaling
-No Docker setup yet
+---
 
-**💡 Future Improvements **
-Async processing with Celery
-Real-time detection API
-Model performance optimization
-Docker deployment
+## ⚠️ Limitations
 
-**📄 License**
+* Video processing is synchronous (can be slow)
+* SQLite not suitable for multi-user scaling
+* No Docker setup yet
+
+---
+
+## 💡 Future Improvements
+
+* Async processing with Celery
+* Real-time detection API
+* Model performance optimization
+* Docker deployment
+
+---
+
+## 📄 License
 
 MIT License
 
-**🙌 Credits**
-Celeb-DF-v2 Dataset
-EfficientNet (Google Research)
-OpenCV
+---
+
+## 🙌 Credits
+
+* Celeb-DF-v2 Dataset
+* EfficientNet (Google Research)
+* OpenCV
+
